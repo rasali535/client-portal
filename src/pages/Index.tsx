@@ -35,7 +35,9 @@ const Index = () => {
     // Check if Supabase is configured
     const isSupabaseConfigured = import.meta.env.VITE_SUPABASE_URL &&
         import.meta.env.VITE_SUPABASE_URL !== "YOUR_SUPABASE_URL" &&
-        import.meta.env.VITE_SUPABASE_URL.startsWith("http");
+        import.meta.env.VITE_SUPABASE_URL.startsWith("http") &&
+        import.meta.env.VITE_SUPABASE_ANON_KEY &&
+        import.meta.env.VITE_SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
 
     useEffect(() => {
         if (session) {
@@ -77,7 +79,8 @@ const Index = () => {
                 toast.success("Account created! Please check your email.");
             }
         } catch (error: any) {
-            toast.error(error.message);
+            console.error("Auth error:", error);
+            toast.error(error.message || "An error occurred during authentication");
         } finally {
             setLoading(false);
         }
@@ -89,9 +92,15 @@ const Index = () => {
                 <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
                     <div>
-                        <h3 className="font-semibold text-yellow-900">Supabase Not Configured</h3>
+                        <h3 className="font-semibold text-yellow-900">Connection Not Configured</h3>
                         <p className="text-sm text-yellow-700 mt-1">
-                            Please update your <code className="bg-yellow-100 px-1 rounded">.env</code> file.
+                            The application is not connected to Supabase.
+                        </p>
+                        <p className="text-sm text-yellow-700 mt-2">
+                            <strong>Local Development:</strong> Update your <code className="bg-yellow-100 px-1 rounded">.env</code> file.
+                        </p>
+                        <p className="text-sm text-yellow-700 mt-1">
+                            <strong>Production (Hostinger):</strong> You must <b>re-run the build</b> ("npm run build") after creating your .env file locally, and then re-upload the `dist` folder. Environment variables are baked in during the build.
                         </p>
                     </div>
                 </div>
